@@ -2,7 +2,7 @@ from langchain_groq import ChatGroq
 import os
 import streamlit as st
 
-class ChatGroq:
+class Groq_llm:
     
     def __init__(self, user_control_input: dict):
         self.user_controls_input = user_control_input

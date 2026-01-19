@@ -1,5 +1,8 @@
 from src.AgenticAI.UI.streamlit.loadui import LoadStreamlitUI
 import streamlit as st
+from src.AgenticAI.LLMS.Groqllm import Groq_llm
+from src.AgenticAI.Graph.GraphBuilder import GraphBuilder
+from src.AgenticAI.UI.streamlit.display_result import DisplayResultsSreamlit
 
 def load_agentic_ai_app():
     """
@@ -19,6 +22,37 @@ def load_agentic_ai_app():
         return
     
     user_message = st.chat_input("Enter your message:")
+    
+    if user_message:
+        try:
+            # Loading the LLM
+            model = Groq_llm(user_input).get_llm_model()
+            if not model:
+                st.error("Error: Model could not be loaded")
+                return
+            
+            usecase = user_input.get("selected_usecase")
+            if not usecase:
+                st.error("Error: usecase was not selected")
+                return
+            
+            
+            # Loading the graph
+            graph_builder = GraphBuilder(model)
+            
+            try:
+                graph = graph_builder.setup_graph(usecase)
+                print(f"User message is {user_message}")
+                DisplayResultsSreamlit(usecase,graph,user_message).display_result_on_ui()
+            except Exception as e:
+                st.error(f"Error: Graph set up failed - {e}")
+                return
+            
+        except Exception as e:
+            st.error("Error: Project setup failed - {e}")
+            return
+            
+        
     
     
             
