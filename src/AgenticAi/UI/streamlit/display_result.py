@@ -49,5 +49,27 @@ class DisplayResultsSreamlit:
                 elif type(message) == AIMessage and message.content:
                     with st.chat_message("assistant"):
                         st.write(message.content)
+        
+        elif self.usecase == "AI News":
+            print("Inside AI news display ui usecase")
             
+            frequency = self.user_message
+            with st.spinner("Fetching and summarizing news... ⏳"):
+                result_state = self.graph.invoke({"messages":frequency})
+                print(f"The result sate is {result_state}")
+                
+                try:
+                    # Read the markdown file
+                    AI_NEWS_PATH = f"./AINews/{frequency.lower()}_summary.md"
+                    with open(AI_NEWS_PATH,"r") as file:
+                        markdown_content = file.read()
+                        
+                        # Display the markdown content inn streamlit
+                        st.markdown(markdown_content,unsafe_allow_html=True)
+                except FileNotFoundError:
+                    st.error(f"News not generated or file now found {AI_NEWS_PATH}")
+                
+                except Exception as e:
+                    st.error(f"Process failed with error {e}")
+                            
             

@@ -5,6 +5,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from src.AgenticAI.Tools.tools import create_tool_node, get_tools
 from langgraph.prebuilt import tools_condition
 from src.AgenticAI.Nodes.ChatbotWithTools import ChatbotWithTools
+from src.AgenticAI.Nodes.AI_News_Node import AI_News_Node
 
 class GraphBuilder:
     
@@ -58,7 +59,28 @@ class GraphBuilder:
         self.graph_builder.add_edge("SuperBot",END)
         
         return self.graph_builder.compile()
+    
+    def ai_news_graph(self):
+        """
+        Builds an AI News summarizer chatbot which uses tavily search to search latest AI news 
+        and then formats and saves it as a markdown file.
+        """
         
+        # Getting the AI_News_Node
+        ai_news_node = AI_News_Node(self.llm)
+        
+        # Add Nodes
+        self.graph_builder.add_node("Fetch_News",ai_news_node.fetch_news)
+        self.graph_builder.add_node("Summarize_News",ai_news_node.summarize_news)
+        self.graph_builder.add_node("Save_Result",ai_news_node.save_result)
+        
+        # Add Edges
+        self.graph_builder.add_edge(START,"Fetch_News")
+        self.graph_builder.add_edge("Fetch_News","Summarize_News")
+        self.graph_builder.add_edge("Summarize_News","Save_Result")
+        self.graph_builder.add_edge("Save_Result",END)
+        
+        return self.graph_builder.compile()
     
     def setup_graph(self,usecase:str):
         
@@ -67,5 +89,8 @@ class GraphBuilder:
         
         elif usecase == "Chatbot With Web":
             return self.chatbot_with_tools_graph()
+        
+        elif usecase == "AI News":
+            return self.ai_news_graph()
     
          
