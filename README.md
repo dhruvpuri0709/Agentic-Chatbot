@@ -1,4 +1,4 @@
-# 🤖 Agentic AI Chatbot
+# 🤖 Agentic AI News Summarizer
 
 > **The future of AI is not just responding—it's *thinking, searching, and acting* autonomously.**
 
